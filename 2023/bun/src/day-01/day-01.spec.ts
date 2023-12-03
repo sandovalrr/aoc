@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'bun:test';
 import Bun from 'bun';
-
-const getFilename = (filename: string) => [import.meta.dir, filename].join('/');
+import { getFilePath } from '../utils.ts';
 
 describe('day-01', () => {
   describe('part-01', async () => {
@@ -16,7 +15,7 @@ treb7uchet`;
     });
 
     it('should return 55090', async () => {
-      const input = await Bun.file(getFilename('input_01.txt')).text();
+      const input = await Bun.file(getFilePath('day-01/input_01.txt')).text();
       expect(process(input)).toEqual(55090);
     });
   });
@@ -36,7 +35,7 @@ zoneight234
     });
 
     it('should return 54871', async () => {
-      const input = await Bun.file(getFilename('input_02.txt')).text();
+      const input = await Bun.file(getFilePath('day-01/input_02.txt')).text();
       expect(process(input)).toEqual(54871);
     });
   });
