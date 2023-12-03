@@ -1,75 +1,40 @@
+use crate::game::game;
+
 /**
 --- Part Two ---
-Your calculation isn't quite right. It looks like some of the digits are actually spelled
-out with letters: one, two, three, four, five, six, seven, eight, and nine also count as valid "digits".
+The Elf says they've stopped producing snow because they aren't getting any water! He isn't sure why the water stopped; however, he can show you how to get to the water source to check it out for yourself. It's just up ahead!
 
-Equipped with this new information, you now need to find the real first and last digit on each line. For example:
+As you continue your walk, the Elf poses a second question: in each game you played, what is the fewest number of cubes of each color that could have been in the bag to make the game possible?
 
-two1nine
-eightwothree
-abcone2threexyz
-xtwone3four
-4nineeightseven2
-zoneight234
-7pqrstsixteen
+Again consider the example games from earlier:
 
-In this example, the calibration values are 29, 83, 13, 24, 42, 14, and 76. Adding these together produces 281.
+Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
+Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue
+Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red
+Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
+Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green
+In game 1, the game could have been played with as few as 4 red, 2 green, and 6 blue cubes. If any color had even one fewer cube, the game would have been impossible.
+Game 2 could have been played with a minimum of 1 red, 3 green, and 4 blue cubes.
+Game 3 must have been played with at least 20 red, 13 green, and 6 blue cubes.
+Game 4 required at least 14 red, 3 green, and 15 blue cubes.
+Game 5 needed no fewer than 6 red, 3 green, and 2 blue cubes in the bag.
+The power of a set of cubes is equal to the numbers of red, green, and blue cubes multiplied together. The power of the minimum set of cubes in game 1 is 48. In games 2-5 it was 12, 1560, 630, and 36, respectively. Adding up these five powers produces the sum 2286.
+
+For each game, find the minimum set of cubes that must have been present. What is the sum of the power of these sets?
 */
 
 pub fn process(value: &str) -> i32 {
-    let output = value
+    let possible_games = value
         .lines()
         .map(|line| {
-            // Filter out all non-digits and convert them to i32
-            // it needs to be mutable because we need to call last() on it
-            // and last() consumes the iterator
-            let mut i32_chars = line.chars().enumerate().filter_map(|(idx, c)| {
-                c.to_digit(10).or({
-                    // get substring from index to end of string
-                    let substr = &line[idx..];
-                    // if the substring starts with one of the words, return the corresponding digit
-                    if substr.starts_with("one") {
-                        Some(1)
-                    } else if substr.starts_with("two") {
-                        Some(2)
-                    } else if substr.starts_with("three") {
-                        Some(3)
-                    } else if substr.starts_with("four") {
-                        Some(4)
-                    } else if substr.starts_with("five") {
-                        Some(5)
-                    } else if substr.starts_with("six") {
-                        Some(6)
-                    } else if substr.starts_with("seven") {
-                        Some(7)
-                    } else if substr.starts_with("eight") {
-                        Some(8)
-                    } else if substr.starts_with("nine") {
-                        Some(9)
-                    } else {
-                        None
-                    }
-                })
-            });
+            let game = game::Game::new(line);
 
-            println!("{:?}", i32_chars);
-
-            // Get the first digit and pop it from the iterator
-            let first = i32_chars.next().expect("should have a first digit");
-
-            // Get the last digit and pop it from the iterator
-            match i32_chars.last() {
-                Some(last) => format!("{first}{last}"),
-                None => format!("{first}{first}"),
-            }
-            // Parse the string to i32
-            .parse::<i32>()
-            // if it fails, panic
-            .expect("should be able to parse the number")
+            game
         })
-        .sum();
+        .map(|game| game.power())
+        .sum::<i32>();
 
-    output
+    possible_games
 }
 
 #[cfg(test)]
@@ -78,15 +43,13 @@ mod test {
 
     #[test]
     fn test_process() {
-        let input = "two1nine
-eightwothree
-abcone2threexyz
-xtwone3four
-4nineeightseven2
-zoneight234
-7pqrstsixteen";
+        let input = "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
+Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue
+Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red
+Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
+Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green";
 
-        assert_eq!(process(input), 281);
-        assert_eq!(process(include_str!("../input_02.txt",)), 54845);
+        assert_eq!(process(input,), 2286);
+        assert_eq!(process(include_str!("../input_02.txt")), 56580);
     }
 }
