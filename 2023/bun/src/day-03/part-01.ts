@@ -1,4 +1,3 @@
-import { z } from 'zod';
 import {
   SchematicLine,
   getAdjacentCoordinates,
@@ -60,7 +59,9 @@ export const process = (value: string) => {
   const adjacentCoordinates = new Set(
     characters
       .map((coordinate) =>
-        getAdjacentCoordinates(coordinate).map((value) => value.join(','))
+        getAdjacentCoordinates(coordinate.coordinate).map((value) =>
+          value.join(',')
+        )
       )
       .flat()
   );

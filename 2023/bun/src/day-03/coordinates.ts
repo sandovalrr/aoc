@@ -7,8 +7,13 @@ export type SchematicNumber = {
   value: number;
 };
 
+export type SchematicCharacter = {
+  coordinate: Coordinate;
+  value: string;
+};
+
 export type SchematicLine = {
-  characters: Coordinate[];
+  characters: SchematicCharacter[];
   numbers: SchematicNumber[];
 };
 const OMITED_SYMBOL = '.';
@@ -41,12 +46,22 @@ export const getXCoordinatesInBetween = (from: Coordinate, to: Coordinate) => {
   );
 };
 
+export const isCoordinateInBetweenNumber = (
+  num: SchematicNumber,
+  coordinate: Coordinate
+) => {
+  const strCoordinate = coordinate.join(',');
+  return getXCoordinatesInBetween(num.from, num.to).some(
+    (value) => value.join(',') === strCoordinate
+  );
+};
+
 export const getAdjacentCoordinates = (coordinate: Coordinate) => {
   const [x, y] = coordinate;
 
   return (
     directions
-      .map(([dx, dy]) => [x + dx, y + dy])
+      .map(([dx, dy]) => [x + dx, y + dy] satisfies Coordinate)
       // filter out negative coordinates
       .filter(([x, y]) => x >= 0 && y >= 0)
   );
@@ -91,10 +106,10 @@ export function getSchematicLine(characters: string[], yCoordinate: number) {
       }
 
       if (character !== OMITED_SYMBOL) {
-        state.line.characters.push([
-          xCoordinate,
-          yCoordinate,
-        ] satisfies Coordinate);
+        state.line.characters.push({
+          coordinate: [xCoordinate, yCoordinate] satisfies Coordinate,
+          value: character,
+        });
       }
 
       return {
