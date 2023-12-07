@@ -1,2 +1,4 @@
+import { join } from 'node:path';
+
 export const getFilePath = (filename: string) =>
-  [import.meta.dir, filename].join('/');
+  join(import.meta.dir, filename);
